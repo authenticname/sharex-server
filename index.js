@@ -16,7 +16,7 @@ app.use(fileUpload());
 app.get(`/${config.directory}/:img`, async (req, res) => {
     const file = await fs.exists(`${__dirname}/${config.directory}/${req.params.img}`);
     if (!file) return res.status(404).end();
-    res.sendFile(`${__dirname}/${config.dir}/${req.params.img}`)
+    res.sendFile(`${__dirname}/${config.directory}/${req.params.img}`)
 });
 
 app.get('*', (req, res) => {
