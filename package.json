@@ -1,0 +1,17 @@
+{
+  "name": "private-sharex-server",
+  "version": "1.0.0",
+  "description": "ShareX custom upload server made with NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Kovacs Alex",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "express-fileupload": "^1.1.1-alpha.2",
+    "fs-extra": "^7.0.1"
+  }
+}
