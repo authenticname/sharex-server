@@ -9,10 +9,12 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(fileUpload());
 
-fs.ensureDirSync(__dirname + config.dir)
+(async function() {
+    await fs.ensureDir(__dirname + config.directory)
+})();
 
 app.get(`/${config.dir}/:img`, async (req, res) => {
-    const file = await fs.exists(`${__dirname}/${config.dir}/${req.params.img}`);
+    const file = await fs.exists(`${__dirname}/${config.directory}/${req.params.img}`);
     if (!file) return res.status(404).end();
     res.sendFile(`${__dirname}/${config.dir}/${req.params.img}`)
 });
@@ -35,7 +37,7 @@ app.post('/api/upload', async (req, res) => {
             const string = await generateString(config.len);
             await fs.writeFile(`./${config.dir}/${string}.png`, req.files.img.data);
             res.send({
-                url: `${req.protocol}://${req.get('host')}/${config.dir}/${string}.png`
+                url: `${req.protocol}://${req.get('host')}/${config.directory}/${string}.png`
             })
         }
         catch (err) { res.status(500).send(err).end(); }
