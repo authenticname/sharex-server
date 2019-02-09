@@ -9,11 +9,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(fileUpload());
 
-async function ensure() {
-    await fs.ensureDir(__dirname + config.dir)
-};
-
-ensure()
+fs.ensureDirSync(__dirname + config.dir)
 
 app.get(`/${config.dir}/:img`, async (req, res) => {
     const file = await fs.exists(`${__dirname}/${config.dir}/${req.params.img}`);
