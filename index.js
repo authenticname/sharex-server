@@ -53,7 +53,7 @@ async function generateString(length) {
         final += possible[Math.floor(Math.random() * possible.length)]
     }
 
-    const exists = await fs.exists(`${__dirname}/uploads/${final}.png`);
+    const exists = await fs.exists(`${__dirname}/${config.directory}/${final}.png`);
     if (exists) return await generateString(length);
 
     return final;
