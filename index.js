@@ -10,7 +10,7 @@ app.set('view engine', 'ejs');
 app.use(fileUpload());
 
 (async function() {
-    await fs.ensureDir(__dirname + config.directory)
+    await fs.ensureDir(__dirname + '/' + config.directory)
 })();
 
 app.get(`/${config.dir}/:img`, async (req, res) => {
