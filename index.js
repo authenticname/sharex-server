@@ -35,7 +35,7 @@ app.post('/api/upload', async (req, res) => {
         try {
             res.status(200);
             const string = await generateString(config.len);
-            await fs.writeFile(`./${config.dir}/${string}.png`, req.files.img.data);
+            await fs.writeFile(`./${config.directory}/${string}.png`, req.files.img.data);
             res.send({
                 url: `${req.protocol}://${req.get('host')}/${config.directory}/${string}.png`
             })
