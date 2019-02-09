@@ -29,7 +29,7 @@ app.get('*', (req, res) => {
 });
 
 app.post('/api/upload', async (req, res) => {
-    if (!req.headers.pass || req.headers.pass !== config.pass) return res.status(403).send('invalid pass').end();
+    if (!req.headers.password || req.headers.password !== config.password) return res.status(403).send('invalid pass').end();
 
     if (req.files.img && (/\.(gif|jpg|jpeg|tiff|png)$/i).test(req.files.img.name)) {
         try {
