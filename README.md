@@ -18,9 +18,12 @@ FYI, the application will generate a `.sxcu` file that you can open, so no setti
 
 ### Config File
 `password` - that password that's going to be used to authentificate the ShareX client with the server
-`directory` ^optional^ - the directory your images will get saved to (example: `uploads`, this will automatically lead to the public URL being `server:port/uploads/`)
-`PORT` ^optional^ - the port the web server will run on (defaults to 60)
-`len` ^optional^ - the maximum length of a filename (defaults to 10)
+
+`directory` (optional) - the directory your images will get saved to (example: `uploads`, this will automatically lead to the public URL being `server:port/uploads/`)
+
+`PORT` (optional) - the port the web server will run on (defaults to 60)
+
+`len` (optional) - the maximum length of a filename (defaults to 10)
 
 Example: 
 ```json 
