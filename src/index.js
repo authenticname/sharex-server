@@ -6,7 +6,6 @@ const config = require('./config.json');
 const package = require('../package.json');
 
 const app = express();
-app.set('view engine', 'ejs');
 app.use(fileUpload());
 
 (async function () {
