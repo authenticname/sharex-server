@@ -56,4 +56,5 @@ async function generateString(length) {
     return final;
 }
 
-app.listen(process.env.PORT || 60, () => console.log(`${package.name} started on port ${process.env.PORT || 60}`))
+const PORT = process.env.PORT || config.PORT || 60;
+app.listen(PORT, () => console.log(`${package.name} started on port ${PORT}`))
