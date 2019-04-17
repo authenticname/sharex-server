@@ -21,10 +21,7 @@ app.get(`/${config.directory}/:img`, async (req, res) => {
 
 app.get('*', (req, res) => {
     res.status(404);
-    res.render('index', {
-        title: package.name,
-        author: package.author,
-    });
+    res.send(`this server is running ${package.name} by ${package.author.toLowerCase()}`);
     res.end();
 });
 
