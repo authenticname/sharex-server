@@ -80,7 +80,7 @@ async function generateString(length, tries = 0) {
     }
 
     const exists = await fs.exists(`${__dirname}/${directory}${final}.png`);
-    if (exists) return await generateString(length, tries++);
+    if (exists) return generateString(length, ++tries);
 
     return final;
 }
