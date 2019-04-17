@@ -2,9 +2,9 @@
   "name": "private-sharex-server",
   "version": "1.0.0",
   "description": "ShareX custom upload server made with NodeJS",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js"
   },
   "author": "Kovacs Alex",
   "license": "MIT",
