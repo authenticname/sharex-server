@@ -1,4 +1,4 @@
-# private-sharex-server (NodeJS)
+# sharex-server (NodeJS)
 
 *warning: I made this code a while ago, and only added to it recently, so this might not be the most efficient one ever*
 

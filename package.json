@@ -1,5 +1,5 @@
 {
-  "name": "private-sharex-server",
+  "name": "sharex-server",
   "version": "1.0.0",
   "description": "ShareX custom upload server made with NodeJS",
   "main": "src/index.js",
