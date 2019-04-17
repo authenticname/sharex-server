@@ -14,8 +14,11 @@ app.use(fileUpload());
 
 if (config.directory === '/') config.directory = '';
 if (config.directory.startsWith('/')) config.directory = config.directory.replace('/', '');
+if (!config.len) config.len = 10;
 
 const directory = config.directory ? `${config.directory}/` : '';
+
+let generated = false;
 
 app.get(`/${directory}:img`, async (req, res) => {
     const file = await fs.exists(`${__dirname}/${directory}${req.params.img}`);
@@ -23,10 +26,29 @@ app.get(`/${directory}:img`, async (req, res) => {
     res.sendFile(`${__dirname}/${directory}${req.params.img}`)
 });
 
+app.get('/generatesxcu', async (req, res) => {
+    if (generated || await fs.exists(`${__dirname}/openMe.sxcu`)) return res.status(403).end();
+    try {
+        await fs.writeFile(`${__dirname}/openMe.sxcu`, JSON.stringify({
+            "Version": "12.4.1",
+            "RequestMethod": "POST",
+            "RequestURL": `${req.protocol}://${req.get('host')}/api/upload`,
+            "Body": "MultipartFormData",
+            "Headers": {
+                "password": config.password
+            },
+            "FileFormName": "img",
+            "URL": "$json:url$"
+        }))
+        generated = true;
+        res.status(200);
+        res.send(`done! you can open your file by navigating to ${__dirname}/openMe.sxcu`);
+    } catch (err) { res.status(500).send(err).end(); }
+
+});
+
 app.get('*', (req, res) => {
-    res.status(404);
-    res.send(`this server is running ${package.name} by ${package.author.toLowerCase()}`);
-    res.end();
+    return res.status(404).send(`this server is running ${package.name} by ${package.author.toLowerCase()}`).end();
 });
 
 app.post('/api/upload', async (req, res) => {
