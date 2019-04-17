@@ -9,6 +9,8 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(fileUpload());
 
+
+
 (async function() {
     await fs.ensureDir(__dirname + '/' + config.directory)
 })();
@@ -16,10 +18,12 @@ app.use(fileUpload());
 if (config.directory === '/') config.directory = '';
 if (config.directory.startsWith('/')) config.directory = config.directory.replace('/', '');
 
-app.get(`/${config.directory}/:img`, async (req, res) => {
-    const file = await fs.exists(`${__dirname}/${config.directory ? `${config.directory}/` : ''}${req.params.img}`);
+const directory = config.directory ? `${config.directory}/` : '';
+
+app.get(`/${directory}:img`, async (req, res) => {
+    const file = await fs.exists(`${__dirname}/${directory}${req.params.img}`);
     if (!file) return res.status(404).end();
-    res.sendFile(`${__dirname}/${config.directory ? `${config.directory}/` : ''}${req.params.img}`)
+    res.sendFile(`${__dirname}/${directory}${req.params.img}`)
 });
 
 app.get('*', (req, res) => {
@@ -35,9 +39,9 @@ app.post('/api/upload', async (req, res) => {
         try {
             res.status(200);
             const string = await generateString(config.len);
-            await fs.writeFile(`./${config.directory ? `${config.directory}/` : ''}${string}.png`, req.files.img.data);
+            await fs.writeFile(`./${directory}${string}.png`, req.files.img.data);
             res.send({
-                url: `${req.protocol}://${req.get('host')}/${config.directory ? `${config.directory}/` : ''}${string}.png`
+                url: `${req.protocol}://${req.get('host')}/${directory}${string}.png`
             })
         }
         catch (err) { res.status(500).send(err).end(); }
@@ -53,7 +57,7 @@ async function generateString(length) {
         final += possible[Math.floor(Math.random() * possible.length)]
     }
 
-    const exists = await fs.exists(`${__dirname}/${config.directory ? `${config.directory}/` : ''}${final}.png`);
+    const exists = await fs.exists(`${__dirname}/${directory}${final}.png`);
     if (exists) return await generateString(length);
 
     return final;
