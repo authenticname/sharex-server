@@ -13,10 +13,13 @@ app.use(fileUpload());
     await fs.ensureDir(__dirname + '/' + config.directory)
 })();
 
+if (config.directory === '/') config.directory = '';
+if (config.directory.startsWith('/')) config.directory = config.directory.replace('/', '');
+
 app.get(`/${config.directory}/:img`, async (req, res) => {
-    const file = await fs.exists(`${__dirname}/${config.directory}/${req.params.img}`);
+    const file = await fs.exists(`${__dirname}/${config.directory ? `${config.directory}/` : ''}${req.params.img}`);
     if (!file) return res.status(404).end();
-    res.sendFile(`${__dirname}/${config.directory}/${req.params.img}`)
+    res.sendFile(`${__dirname}/${config.directory ? `${config.directory}/` : ''}${req.params.img}`)
 });
 
 app.get('*', (req, res) => {
@@ -32,9 +35,9 @@ app.post('/api/upload', async (req, res) => {
         try {
             res.status(200);
             const string = await generateString(config.len);
-            await fs.writeFile(`./${config.directory}/${string}.png`, req.files.img.data);
+            await fs.writeFile(`./${config.directory ? `${config.directory}/` : ''}${string}.png`, req.files.img.data);
             res.send({
-                url: `${req.protocol}://${req.get('host')}/${config.directory}/${string}.png`
+                url: `${req.protocol}://${req.get('host')}/${config.directory ? `${config.directory}/` : ''}${string}.png`
             })
         }
         catch (err) { res.status(500).send(err).end(); }
@@ -50,7 +53,7 @@ async function generateString(length) {
         final += possible[Math.floor(Math.random() * possible.length)]
     }
 
-    const exists = await fs.exists(`${__dirname}/${config.directory}/${final}.png`);
+    const exists = await fs.exists(`${__dirname}/${config.directory ? `${config.directory}/` : ''}${final}.png`);
     if (exists) return await generateString(length);
 
     return final;
