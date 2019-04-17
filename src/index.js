@@ -41,8 +41,7 @@ app.get('/generatesxcu', async (req, res) => {
             "URL": "$json:url$"
         }))
         generated = true;
-        res.status(200);
-        res.send(`done! you can open your file by navigating to ${__dirname}/openMe.sxcu`);
+        res.status(200).send(`done! you can open your file by navigating to ${__dirname}/openMe.sxcu`);
     } catch (err) { res.status(500).send(err).end(); }
 
 });
@@ -56,12 +55,12 @@ app.post('/api/upload', async (req, res) => {
 
     if (req.files.img && (/\.(gif|jpg|jpeg|tiff|png)$/i).test(req.files.img.name)) {
         try {
-            res.status(200);
             const string = await generateString(config.len).catch(error => { console.error(error); throw error; });
             await fs.writeFile(`./${directory}${string}.png`, req.files.img.data);
-            res.send({
+            res.status(200).send({
                 url: `${req.protocol}://${req.get('host')}/${directory}${string}.png`
             })
+
         }
         catch (err) { res.status(500).send(err).end(); }
     } else res.status(500).end();
