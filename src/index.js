@@ -9,9 +9,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(fileUpload());
 
-
-
-(async function() {
+(async function () {
     await fs.ensureDir(__dirname + '/' + config.directory)
 })();
 

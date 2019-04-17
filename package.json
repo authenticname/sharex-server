@@ -4,7 +4,7 @@
   "description": "ShareX custom upload server made with NodeJS",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "echo please cd to the src folder and do node index.js (otherwise I can't guarantee that file uploading will work as expected)"
   },
   "author": "Kovacs Alex",
   "license": "MIT",
