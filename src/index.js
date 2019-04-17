@@ -3,7 +3,7 @@ const fileUpload = require('express-fileupload');
 const fs = require('fs-extra');
 
 const config = require('./config.json');
-const package = require('./package.json');
+const package = require('../package.json');
 
 const app = express();
 app.set('view engine', 'ejs');
