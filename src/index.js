@@ -36,7 +36,7 @@ app.post('/api/upload', async (req, res) => {
     if (req.files.img && (/\.(gif|jpg|jpeg|tiff|png)$/i).test(req.files.img.name)) {
         try {
             res.status(200);
-            const string = await generateString(config.len);
+            const string = await generateString(config.len).catch(error => { console.error(error); throw error; });
             await fs.writeFile(`./${directory}${string}.png`, req.files.img.data);
             res.send({
                 url: `${req.protocol}://${req.get('host')}/${directory}${string}.png`
@@ -47,7 +47,10 @@ app.post('/api/upload', async (req, res) => {
 
 });
 
-async function generateString(length) {
+async function generateString(length, tries = 0) {
+
+    if (tries >= 100) throw new Error('tried 100 string combinations for a file, but all of them are already taken. I suggest cleaning older images!')
+
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.split('');
     let final = '';
 
@@ -56,7 +59,7 @@ async function generateString(length) {
     }
 
     const exists = await fs.exists(`${__dirname}/${directory}${final}.png`);
-    if (exists) return await generateString(length);
+    if (exists) return await generateString(length, tries++);
 
     return final;
 }
