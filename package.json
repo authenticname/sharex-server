@@ -1,9 +1,10 @@
 {
   "name": "sharex-server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ShareX image hosting done with NodeJS",
   "main": "src/index.js",
   "author": "Kovacs Alex <alex@atm.moe>",
+  "keywords": ["sharex", "sharex-server", "sharex server", "sharex image hoster"],
   "license": "MIT",
   "dependencies": {
     "express-fileupload": "^1.1.1-alpha.2",
