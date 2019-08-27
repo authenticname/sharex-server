@@ -5,7 +5,7 @@
 
 ### Usage
 - `npm install sharex-server`
-- 
+- Use the following code:
 ```js
 const Server = require('sharex-server');
 
