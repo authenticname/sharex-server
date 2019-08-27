@@ -14,5 +14,6 @@ new Server({
         path: 'definitely/not/my/nudes',
         port: 6666,
         fileLength: 10
-})```
+})
+```
 - Enjoy
