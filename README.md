@@ -17,3 +17,8 @@ new Server({
 })
 ```
 - Enjoy
+
+### ShareX - Custom uploader settings
+
+![](./assets/01.png)
+![](./assets/02.png)
