@@ -1,88 +1,134 @@
-const express = require('express');
+const polka = require('polka');
 const fileUpload = require('express-fileupload');
 const fs = require('fs-extra');
 
-const config = require('./config.json');
-const package = require('../package.json');
+const formatREGEX = /\.(gif|jpg|jpeg|tiff|png)$/i;
 
-const app = express();
-app.use(fileUpload());
+const middlewares = {
+    // Easy way to set a status of a response
+    status: function (req, res, next) {
+        res.status = function (code) {
+            this.setHeader('status', code);
+            return this;
+        };
 
-(async function () {
-    await fs.ensureDir(__dirname + '/' + config.directory)
-})();
-
-if (config.directory === '/') config.directory = '';
-if (config.directory.startsWith('/')) config.directory = config.directory.replace('/', '');
-if (!config.len) config.len = 10;
-
-const directory = config.directory ? `${config.directory}/` : '';
-
-let generated = false;
-
-app.get(`/${directory}:img`, async (req, res) => {
-    const file = await fs.exists(`${__dirname}/${directory}${req.params.img}`);
-    if (!file) return res.status(404).end();
-    res.sendFile(`${__dirname}/${directory}${req.params.img}`)
-});
-
-app.get('/generatesxcu', async (req, res) => {
-    if (generated || await fs.exists(`${__dirname}/openMe.sxcu`)) return res.status(403).end();
-    try {
-        await fs.writeFile(`${__dirname}/openMe.sxcu`, JSON.stringify({
-            "Version": "12.4.1",
-            "RequestMethod": "POST",
-            "RequestURL": `${req.protocol}://${req.get('host')}/api/upload`,
-            "Body": "MultipartFormData",
-            "Headers": {
-                "password": config.password
-            },
-            "FileFormName": "img",
-            "URL": "$json:url$"
-        }))
-        generated = true;
-        res.status(200).send(`done! you can open your file by navigating to ${__dirname}/openMe.sxcu`);
-    } catch (err) { res.status(500).send(err).end(); }
-
-});
-
-app.get('*', (req, res) => {
-    return res.status(404).send(`this server is running ${package.name} by ${package.author.toLowerCase()}`).end();
-});
-
-app.post('/api/upload', async (req, res) => {
-    if (!req.headers.password || req.headers.password !== config.password) return res.status(403).send('invalid pass').end();
-
-    if (req.files.img && (/\.(gif|jpg|jpeg|tiff|png)$/i).test(req.files.img.name)) {
-        try {
-            const string = await generateString(config.len).catch(error => { console.error(error); throw error; });
-            await fs.writeFile(`./${directory}${string}.png`, req.files.img.data);
-            res.status(200).send({
-                url: `${req.protocol}://${req.get('host')}/${directory}${string}.png`
-            })
-
-        }
-        catch (err) { res.status(500).send(err).end(); }
-    } else res.status(500).end();
-
-});
-
-async function generateString(length, tries = 0) {
-
-    if (tries >= 100) throw new Error('tried 100 string combinations for a file, but all of them are already taken. I suggest cleaning older images!')
-
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.split('');
-    let final = '';
-
-    for (let i = 0; i < length; i++) {
-        final += possible[Math.floor(Math.random() * possible.length)]
+        return next();
     }
-
-    const exists = await fs.exists(`${__dirname}/${directory}${final}.png`);
-    if (exists) return generateString(length, ++tries);
-
-    return final;
 }
 
-const PORT = process.env.PORT || config.PORT || 60;
-app.listen(PORT, () => console.log(`${package.name} started on port ${PORT}`))
+/**
+ * @class
+ */
+class Server {
+    /**
+     * @constructor
+     * @param {Object} config
+     * @param {String} config.password The password
+     * @param {String} config.path The path the uploads will be stored
+     * @param {Number} config.port The port the server will be running on
+     * @param {Number} config.fileLength The desired length of the file name
+     */
+    constructor(config = { password: "1234", path: "uploads", port: 6060, fileLength: 10 }) {
+        this._password = config.password;
+        this._path = this.parsePath(config.path);
+        this._port = config.port;
+        this._fileLength = config.fileLength;
+
+        this._server = null;
+        this._init()
+    }
+
+    /**
+     * @private
+     */
+    async _init() {
+        // Make sure the directory the uploads will go in exists
+        await fs.ensureDir(__dirname + this._path)
+
+        // Server setup
+        this._server = polka();
+        this._server.use(fileUpload());
+        this._server.use(middlewares.status);
+        this._server.listen(this._port, () => console.log(`[Server] ShareX server started on port ${this._port}`));
+
+        this._routes();
+    }
+
+    /**
+     * @private
+     */
+    _routes() {
+
+        // Serve the image, if it exists
+        this._server.get(this._path + ':img', async (req, res) => {
+
+            // Check if the file exists
+            const exists = await fs.exists(__dirname + this._path + req.params.img);
+            if (!exists) return res.status(404).end('Image not found');
+
+            const [, format] = formatREGEX.exec(req.params.img);
+            if (format === 'gif') res.writeHead(200, { "Content-Type": "image/gif" });
+            else res.writeHead(200, { "Content-Type": "image/png" });
+            return fs.createReadStream(__dirname + this._path + req.params.img).pipe(res);
+        });
+
+        // Handle the uploading
+        this._server.post('/api/upload', async (req, res) => {
+
+            // Checks
+            if (!req.headers.password || req.headers.password !== this._password) return res.status(403).end('No password / Wrong password provided.');
+            if (!req.files.image || !formatREGEX.test(req.files.image.name)) return res.status(403).end('Please provide a valid image.');
+
+            // Generate a string
+            const string = await this.string(this._fileLength).catch(error => { throw new Error(error) });
+
+            const [, type] = formatREGEX.exec(req.files.image.name);
+
+            // Try to save the file
+            try {
+                await fs.writeFile(__dirname + this._path + string + (type === 'gif' ? '.gif' : '.png'), req.files.image.data);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({ URL: `${req.connection.encrypted ? 'https://' : 'http://'}${req.headers.host}${this._path}${string}.${type}` }))
+            } catch (err) {
+                return res.status(500).end('Something went wrong, try again later.');
+            }
+        });
+
+        this._server.get('*', (req, res) => res.status(403).end())
+    }
+
+    /**
+     * Parse the path to work with the server (remove additional slash characters / symbols)
+     * @param {String} path
+     * @returns {String}
+     * @example "/uploads/images/"
+     */
+    parsePath(path) {
+        const removerRegex = /([-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/@#])|^\/|\/$/g;
+        path = path.replace(removerRegex, '');
+        return `/${path}${!path.length ? '' : '/'}`;
+    }
+
+    /**
+     * Generate a random string to use for the file name
+     * @param {Number} length The desired length of the file
+     * @returns {Promise<String | Error>}
+     */
+    async string(length = 10, tries = 0) {
+        if (tries >= 100) throw 'Tried 100 string combinations for a file, but all of them are already taken. I suggest cleaning older images!';
+
+        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.split('');
+        let final = '';
+
+        for (let i = 0; i < length; i++) {
+            final += possible[Math.floor(Math.random() * possible.length)]
+        }
+
+        const exists = await fs.exists(`${__dirname}${this._path}${final}.png`);
+        if (exists) return this.string(length, ++tries);
+
+        return final;
+    }
+}
+
+module.exports = Server;

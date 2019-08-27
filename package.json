@@ -1,16 +1,13 @@
 {
   "name": "sharex-server",
   "version": "1.0.0",
-  "description": "ShareX custom upload server made with NodeJS",
+  "description": "ShareX image hosting done with NodeJS",
   "main": "src/index.js",
-  "scripts": {
-    "start": "echo please cd to the src folder and do node index.js (otherwise I can't guarantee that file uploading will work as expected)"
-  },
-  "author": "Kovacs Alex",
+  "author": "Kovacs Alex <alex@atm.moe>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.16.4",
     "express-fileupload": "^1.1.1-alpha.2",
-    "fs-extra": "^7.0.1"
+    "fs-extra": "^7.0.1",
+    "polka": "^0.5.2"
   }
 }
