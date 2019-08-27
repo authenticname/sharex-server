@@ -5,13 +5,14 @@
 
 ### Usage
 - `npm install sharex-server`
-- ```js
-    const Server = require('sharex-server');
+- 
+```js
+const Server = require('sharex-server');
 
-    new Server({
+new Server({
         password: 'password',
         path: 'definitely/not/my/nudes',
         port: 6666,
         fileLength: 10
-    })```
+})```
 - Enjoy
