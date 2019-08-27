@@ -18,7 +18,12 @@ new Server({
 ```
 - Enjoy
 
+The password is to be set as a header;
+The file form name is to be set to `image`;
+The image uploading endpoint is /api/upload;
+The upload endpoint returns a JSON with a URL link;
+
 ### ShareX - Custom uploader settings
 
-![](./assets/01.png)
-![](./assets/02.png)
+![](https://raw.githubusercontent.com/authenticname/sharex-server/master/assets/01.png)
+![](https://raw.githubusercontent.com/authenticname/sharex-server/master/assets/02.png)
