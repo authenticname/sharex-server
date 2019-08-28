@@ -1,6 +1,7 @@
 const polka = require('polka');
 const fileUpload = require('express-fileupload');
 const fs = require('fs-extra');
+const path = require('path');
 
 const formatREGEX = /\.(gif|jpg|jpeg|tiff|png)$/i;
 
@@ -34,6 +35,8 @@ class Server {
         this._port = config.port;
         this._fileLength = config.fileLength;
 
+        this._folder = path.dirname(require.main.filename);
+
         this._server = null;
         this._init()
     }
@@ -43,7 +46,8 @@ class Server {
      */
     async _init() {
         // Make sure the directory the uploads will go in exists
-        await fs.ensureDir(__dirname + this._path)
+        await fs.ensureDir(this._folder + this._path)
+        
 
         // Server setup
         this._server = polka();
@@ -63,13 +67,13 @@ class Server {
         this._server.get(this._path + ':img', async (req, res) => {
 
             // Check if the file exists
-            const exists = await fs.exists(__dirname + this._path + req.params.img);
+            const exists = await fs.exists(this._folder + this._path + req.params.img);
             if (!exists) return res.status(404).end('Image not found');
 
             const [, format] = formatREGEX.exec(req.params.img);
             if (format === 'gif') res.writeHead(200, { "Content-Type": "image/gif" });
             else res.writeHead(200, { "Content-Type": "image/png" });
-            return fs.createReadStream(__dirname + this._path + req.params.img).pipe(res);
+            return fs.createReadStream(this._folder + this._path + req.params.img).pipe(res);
         });
 
         // Handle the uploading
@@ -86,7 +90,7 @@ class Server {
 
             // Try to save the file
             try {
-                await fs.writeFile(__dirname + this._path + string + (type === 'gif' ? '.gif' : '.png'), req.files.image.data);
+                await fs.writeFile(this._folder + this._path + string + (type === 'gif' ? '.gif' : '.png'), req.files.image.data);
                 res.writeHead(200, { "Content-Type": "application/json" });
                 return res.end(JSON.stringify({ URL: `${req.connection.encrypted ? 'https://' : 'http://'}${req.headers.host}${this._path}${string}.${type}` }))
             } catch (err) {
@@ -124,7 +128,7 @@ class Server {
             final += possible[Math.floor(Math.random() * possible.length)]
         }
 
-        const exists = await fs.exists(`${__dirname}${this._path}${final}.png`);
+        const exists = await fs.exists(`${this._folder}${this._path}${final}.png`);
         if (exists) return this.string(length, ++tries);
 
         return final;
