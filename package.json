@@ -1,6 +1,6 @@
 {
   "name": "sharex-server",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "ShareX image hosting done with NodeJS",
   "main": "src/index.js",
   "author": "Kovacs Alex <alex@atm.moe>",
