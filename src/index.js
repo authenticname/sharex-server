@@ -108,7 +108,7 @@ class Server {
      * @example "/uploads/images/"
      */
     parsePath(path) {
-        const removerRegex = /([-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/@#])|^\/|\/$/g;
+        const removerRegex = /([-!$%^&*()_+|~=`{}\[\]:";'<>?,.@#])|^\/|\/$/g;
         path = path.replace(removerRegex, '');
         return `/${path}${!path.length ? '' : '/'}`;
     }
