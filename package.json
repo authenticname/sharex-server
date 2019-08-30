@@ -1,9 +1,17 @@
 {
   "name": "sharex-server",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "ShareX image hosting done with NodeJS",
   "main": "src/index.js",
   "author": "Kovacs Alex <alex@atm.moe>",
+  "homepage": "https://github.com/authenticname/sharex-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/authenticname/sharex-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/authenticname/sharex-server/issues"
+  },
   "keywords": ["sharex", "sharex-server", "sharex server", "sharex image hoster"],
   "license": "MIT",
   "dependencies": {
