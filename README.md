@@ -1,5 +1,8 @@
 # sharex-server (NodeJS)
 
+## The easiest way to run this is to use Docker ([go here](./docker)). If you want to manually run it, continue reading!
+
+
 ### Requirements
 - [Node.js](https://nodejs.org/en)
 
