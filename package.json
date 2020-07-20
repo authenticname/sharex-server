@@ -1,8 +1,11 @@
 {
   "name": "sharex-server",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "ShareX image hosting done with NodeJS",
   "main": "src/index.js",
+  "files": [
+    "src"
+  ],
   "author": "Kovacs Alex <alex@atm.moe>",
   "homepage": "https://github.com/authenticname/sharex-server#readme",
   "repository": {
@@ -12,11 +15,17 @@
   "bugs": {
     "url": "https://github.com/authenticname/sharex-server/issues"
   },
-  "keywords": ["sharex", "sharex-server", "sharex server", "sharex image hoster"],
+  "keywords": [
+    "sharex",
+    "sharex-server",
+    "sharex server",
+    "sharex image hoster"
+  ],
   "license": "MIT",
   "dependencies": {
-    "express-fileupload": "^1.1.1-alpha.2",
+    "express-fileupload": "^1.1.6",
     "fs-extra": "^7.0.1",
+    "nanoid": "^3.1.10",
     "polka": "^0.5.2"
   }
 }

@@ -2,12 +2,14 @@ const polka = require('polka');
 const fileUpload = require('express-fileupload');
 const fs = require('fs-extra');
 const path = require('path');
+const nanoid = require('nanoid');
 
 const formatREGEX = /\.(gif|jpg|jpeg|tiff|png)$/i;
+const removerREGEX = /([-!$%^&*()_+|~=`{}\[\]:";'<>?,.@#])|^[\/]*|[\/]*$/g;
 
 const middlewares = {
     // Easy way to set a status of a response
-    status: function (req, res, next) {
+    status: function (_req, res, next) {
         res.status = function (code) {
             this.setHeader('status', code);
             return this;
@@ -24,10 +26,10 @@ class Server {
     /**
      * @constructor
      * @param {Object} config
-     * @param {String} config.password The password
-     * @param {String} config.path The path the uploads will be stored
-     * @param {Number} config.port The port the server will be running on
-     * @param {Number} config.fileLength The desired length of the file name
+     * @param {string} config.password The password
+     * @param {string} config.path The path the uploads will be stored
+     * @param {number} config.port The port the server will be running on
+     * @param {number} config.fileLength The desired length of the file name
      */
     constructor(config = { password: "1234", path: "uploads", port: 6060, fileLength: 10 }) {
         this._password = config.password;
@@ -41,13 +43,10 @@ class Server {
         this._init()
     }
 
-    /**
-     * @private
-     */
+    /** @private */
     async _init() {
         // Make sure the directory the uploads will go in exists
         await fs.ensureDir(this._folder + this._path)
-        
 
         // Server setup
         this._server = polka();
@@ -58,9 +57,7 @@ class Server {
         this._routes();
     }
 
-    /**
-     * @private
-     */
+    /** @private */
     _routes() {
 
         // Serve the image, if it exists
@@ -71,8 +68,10 @@ class Server {
             if (!exists) return res.status(404).end('Image not found');
 
             const [, format] = formatREGEX.exec(req.params.img);
+
             if (format === 'gif') res.writeHead(200, { "Content-Type": "image/gif" });
             else res.writeHead(200, { "Content-Type": "image/png" });
+
             return fs.createReadStream(this._folder + this._path + req.params.img).pipe(res);
         });
 
@@ -84,7 +83,7 @@ class Server {
             if (!req.files.image || !formatREGEX.test(req.files.image.name)) return res.status(403).end('Please provide a valid image.');
 
             // Generate a string
-            const string = await this.string(this._fileLength).catch(error => { throw new Error(error) });
+            const string = await nanoid(10);
 
             const [, type] = formatREGEX.exec(req.files.image.name);
 
@@ -103,35 +102,13 @@ class Server {
 
     /**
      * Parse the path to work with the server (remove additional slash characters / symbols)
-     * @param {String} path
-     * @returns {String}
+     * @param {string} path
+     * @returns {string}
      * @example "/uploads/images/"
      */
     parsePath(path) {
-        const removerRegex = /([-!$%^&*()_+|~=`{}\[\]:";'<>?,.@#])|^[\/]*|[\/]*$/g;
-        path = path.replace(removerRegex, '');
+        path = path.replace(removerREGEX, '');
         return `/${path}${!path.length ? '' : '/'}`;
-    }
-
-    /**
-     * Generate a random string to use for the file name
-     * @param {Number} length The desired length of the file
-     * @returns {Promise<String | Error>}
-     */
-    async string(length = 10, tries = 0) {
-        if (tries >= 100) throw 'Tried 100 string combinations for a file, but all of them are already taken. I suggest cleaning older images!';
-
-        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.split('');
-        let final = '';
-
-        for (let i = 0; i < length; i++) {
-            final += possible[Math.floor(Math.random() * possible.length)]
-        }
-
-        const exists = await fs.exists(`${this._folder}${this._path}${final}.png`);
-        if (exists) return this.string(length, ++tries);
-
-        return final;
     }
 }
 

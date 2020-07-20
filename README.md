@@ -1,9 +1,9 @@
 # sharex-server (NodeJS)
 
-## The easiest way to run this is to use Docker ([go here](./docker)). If you want to manually run it, continue reading!
+## 🗒️ The easiest way to run sharex-server is to use our Docker solution ([which you can find here](https://github.com/authenticname/sharex-server/tree/master/docker)). If you want to manually run it, continue reading!
 
 
-### Requirements
+### ⚙️ Requirements
 - [Node.js](https://nodejs.org/en)
 
 ### Usage
@@ -22,8 +22,11 @@ new Server({
 - Enjoy
 
 The password is to be set as a header;
+
 The file form name is to be set to `image`;
+
 The image uploading endpoint is /api/upload;
+
 The upload endpoint returns a JSON with a URL link;
 
 ### ShareX - Custom uploader settings
