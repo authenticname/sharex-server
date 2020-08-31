@@ -2,7 +2,7 @@ const polka = require('polka');
 const fileUpload = require('express-fileupload');
 const fs = require('fs-extra');
 const path = require('path');
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
 
 const formatREGEX = /\.(gif|jpg|jpeg|tiff|png)$/i;
 const removerREGEX = /([-!$%^&*()_+|~=`{}\[\]:";'<>?,.@#])|^[\/]*|[\/]*$/g;
