@@ -83,7 +83,7 @@ class Server {
             if (!req.files.image || !formatREGEX.test(req.files.image.name)) return res.status(403).end('Please provide a valid image.');
 
             // Generate a string
-            const string = await nanoid(10);
+            const string = await nanoid(this._fileLength || 10);
 
             const [, type] = formatREGEX.exec(req.files.image.name);
 
