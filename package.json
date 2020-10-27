@@ -25,7 +25,7 @@
   "dependencies": {
     "express-fileupload": "^1.1.6",
     "fs-extra": "^9.0.1",
-    "nanoid": "^3.1.10",
+    "nanoid": "^3.1.16",
     "polka": "^0.5.2"
   }
 }
