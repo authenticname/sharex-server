@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:latest-alpine
 
 # Set the working directory
 WORKDIR /server
