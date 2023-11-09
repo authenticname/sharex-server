@@ -23,9 +23,9 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "express-fileupload": "^1.4.1",
+    "express-fileupload": "^1.4.2",
     "fs-extra": "^9.1.0",
-    "nanoid": "^3.3.6",
+    "nanoid": "^3.3.7",
     "polka": "^0.5.2"
   }
 }
